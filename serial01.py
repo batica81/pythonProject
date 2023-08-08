@@ -42,7 +42,7 @@ for i in range(10000):
     y = ser.readline().strip()
     # print(y)
     if y != b'':
-        x = int(y).to_bytes(2, 'big')
+        x = (int(y) -pcm).to_bytes(2, 'big', signed=True)
         myArray.extend(x)
 
         # print(x - pcm)
