@@ -1,11 +1,14 @@
 import serial
 import wave
 from pygame import mixer
+import pygame
+import json
+
 
 # Instantiate mixer
 mixer.pre_init()
-mixer.init(48000,-16,2,512)
-
+# mixer.init(48000, -16, 2, 512)
+mixer.init(48000, 16, 2, 512) # unsigned
 
 conversion_factor = 3.3 / 65535
 pcm = 32768
@@ -17,10 +20,11 @@ pcm = 32768
 ser = serial.Serial(
     # Serial Port to read the data from
     # port='/dev/ttyACM0',
-    port='COM24',
+    port='/dev/pts/6',
+    # port='COM24',
 
     # Rate at which the information is shared to the communication channel
-    baudrate=115200,
+    baudrate=1152000,
 
     # Applying Parity Checking (none in this case)
     parity=serial.PARITY_NONE,
@@ -38,15 +42,15 @@ ser = serial.Serial(
 
 myArray = bytearray(b'')
 
-for i in range(10000):
+for i in range(48000):
     y = ser.readline().strip()
-    # print(y)
-    if y != b'':
-        x = (int(y) -pcm).to_bytes(2, 'big', signed=True)
+    # print('y: ', y)
+    if (y != b'') & (y.isdigit() & (len(y) < 5)):
+        x = (int(y) - pcm).to_bytes(2, 'big', signed=True)
         myArray.extend(x)
 
         # print(x - pcm)
-        # print(x)
+        # print('x: ',x)
 
 print(myArray)
 
@@ -55,19 +59,29 @@ print(myArray)
 #
 # print(rawSample)
 
-data = myArray
-with wave.open("sound.wav", "wb") as out_f:
-    out_f.setnchannels(1)
-    out_f.setsampwidth(2) # number of bytes
-    out_f.setframerate(11250)
-    out_f.writeframesraw(data)
+# data = myArray
+# with wave.open("sound.wav", "wb") as out_f:
+#     out_f.setnchannels(1)
+#     out_f.setsampwidth(2)  # number of bytes
+#     out_f.setframerate(11250)
+#     out_f.writeframesraw(data)
 
-mixer.music.load('0.wav')
+# mixer.music.load('0.wav')
 
-print("music started playing....")
+# print("music started playing....")
 
-# Set preferred volume
-mixer.music.set_volume(0.9)
+# # Set preferred volume
+# mixer.music.set_volume(0.9)
 
-# Play the music
-mixer.music.play()
+# # Play the music
+# mixer.music.play()
+
+sound = mixer.Sound(myArray)
+
+sound.play(0)
+pygame.time.wait(int(sound.get_length() * 1000))
+
+
+# with open('sine5.txt', 'w') as filehandle:
+#     json.dump(myArray.toList(), filehandle)
+
