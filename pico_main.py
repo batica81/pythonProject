@@ -7,7 +7,8 @@ import utime
 # pinIn = Pin(2, Pin.IN,Pin.PULL_DOWN)
 
 
-sensor_1 = machine.ADC(26)
+sensor_1 = machine.ADC(26)  # pico
+# sensor_1 = machine.ADC()  # wave share
 
 # sensor_2 = machine.ADC(2)
 # sensor_3 = machine.ADC(3)
